@@ -108,7 +108,46 @@ print("--- Milan Data Preview ---")
 head(milano_data)
 
 
+# --- 8.5 TRANSLATION INTO ENGLISH ---
+
+translations <- c(
+  # Metadati
+  "Idstazione"               = "Station_ID",
+  "NomeStazione"             = "Station_Name",
+  "Comune"                   = "Municipality",
+  "date_time"                = "Timestamp",
+  
+  # Inquinanti
+  "Ammoniaca"                = "Ammonia",
+  "Arsenico"                 = "Arsenic",
+  "Benzene"                  = "Benzene",
+  "Benzo(a)pirene"           = "Benzo(a)pyrene",
+  "Biossido di Azoto"        = "Nitrogen_Dioxide",
+  "Biossido di Zolfo"        = "Sulfur_Dioxide",
+  "BlackCarbon"              = "Black_Carbon",
+  "Cadmio"                   = "Cadmium",
+  "Monossido di Azoto"       = "Nitric_Oxide",
+  "Monossido di Carbonio"    = "Carbon_Monoxide",
+  "Nikel"                    = "Nickel",
+  "Ossidi di Azoto"          = "Nitrogen_Oxides",
+  "Ozono"                    = "Ozone",
+  "PM10 (SM2005)"            = "PM10",
+  "Particelle sospese PM2.5" = "PM2.5",
+  "Piombo"                   = "Lead"
+)
+
+# Applichiamo la rinomina massiva
+setnames(wide_dataset, 
+         old = names(translations), 
+         new = unname(translations), 
+         skip_absent = TRUE)
+
+# Verifica finale
+print("--- New English Column Names ---")
+print(names(wide_dataset))
+
+
+
 # --- 9. EXPORTING DATA ---
 fwrite(wide_dataset, "Qualita_Aria_Lombardia_2026.csv", sep = ";", dec = ",")
 
-print("Esportazione completata! Il file CSV è pronto nella tua cartella di lavoro.")
