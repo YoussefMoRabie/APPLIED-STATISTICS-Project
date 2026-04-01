@@ -14,7 +14,7 @@ You can download them in CSV format from the official ARPA Lombardia portal:
 ---
 
 ## 🛠️ Required R Packages
-Per installare le librerie necessarie, esegui il seguente comando in R:
+To install the necessary libraries, run the following command in R:
 
 ```r
 install.packages(c("data.table", "tidyverse", "leaflet"))

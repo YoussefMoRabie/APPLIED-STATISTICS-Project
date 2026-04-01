@@ -93,7 +93,7 @@ print(map_widget) # Forces the map to render
 # Pivot data so each pollutant becomes a column
 wide_dataset <- dcast(
   clean_dataset,
-  Idstazione + NomeStazione + Comune + Quota + latitude + longitude +  date_time ~ NomeTipoSensore,
+  Idstazione + NomeStazione + Comune + date_time ~ NomeTipoSensore,
   value.var = "Value",
   fun.aggregate = mean,
   na.rm = TRUE
