@@ -1,21 +1,29 @@
-# Lombardy Air Quality Analysis 2026
+# University Students Performance & Study Habits
 
-## 🚀 Setup Instructions
-To run the script, place the following datasets in the project's root folder. 
-You can download them in CSV format from the official ARPA Lombardia portal:
+This project works with a dataset of **10,000 university students** from multiple countries. The data includes GPA, study hours, sleep duration, class attendance, social media usage, screen time, AI tool usage, mental stress level, exercise habits, exam scores, and assignment scores.
 
-1. **Air Quality Sensors Data (Measurements):**
-   [Link to Data](https://www.dati.lombardia.it/Ambiente/Dati-sensori-aria/nicp-bhqi/about_data)
-2. **Air Quality Stations (Metadata):**
-   [Link to Stations](https://www.dati.lombardia.it/Ambiente/Stazioni-qualit-dell-aria/ib47-atvt/about_data)
+**Source dataset:** [University Students Performance and Study Habits (2026) on Kaggle](https://www.kaggle.com/datasets/asifxzaman/university-students-performance-and-study-habits2026)
 
-> **Note:** Ensure the downloaded filenames match the strings in the `fread()` functions within the R script (e.g., `Dati_sensori_aria_20260326.csv`). If the dates in the filenames change, update the script accordingly.
+The bundled file in this repository is `global_university_students_performance_habits_10000.csv`.
 
----
+## Objectives
 
-## 🛠️ Required R Packages
-To install the necessary libraries, run the following command in R:
+- Analyze how these factors relate to **academic performance**.
+- Address questions such as:
+  - Is there a practical “formula for success”?
+  - Or is academic excellence mainly driven by natural ability?
+- Build a **predictive model** and a **simple web tool** where students enter habits (study hours, sleep, attendance, social media, etc.) and their current level.
 
-```r
-install.packages(c("data.table", "tidyverse", "leaflet"))
-``` 
+The system is intended to:
+
+- **Predict** GPA  
+- **Classify** performance (high, average, underperforming)  
+- **Recommend** personalized improvements  
+
+## Repository contents
+
+| File | Description |
+|------|-------------|
+| `global_university_students_performance_habits_10000.csv` | Student performance and habit variables (10,000 rows). |
+
+Analysis code, models, and the web application can be added here as the project develops.
