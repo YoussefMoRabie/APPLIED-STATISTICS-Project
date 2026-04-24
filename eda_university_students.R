@@ -97,3 +97,119 @@ if (ncol(num_df) < 2) {
 }
 
 cat("\nEDA complete.\n")
+
+#-------------------------------------------PCA-----------------------------------------------------
+
+# Keep numeric variables only
+students.num <- df[, vapply(df, is.numeric, logical(1)), drop = FALSE]
+
+students.num <- students.num[, colnames(students.num) != "university_year"] #not continous distribution
+
+#gaming hours is righ skewed need log transform
+#first we add 1 for all value of gaming hour if there any zeros prevent the log can get error and goes to infinity
+students.num$gaming_hours <- students.num$gaming_hours + 1
+students.num$gaming_hours <- log(students.num$gaming_hours)
+
+par(mfrow = c(1,2))
+hist(df$gaming_hours, main = "Before", col = "red")
+hist(students.num$gaming_hours, main = "After Log", col = "green")
+
+#coffee consumption per day is righ skewed need log transform
+#first we add 1 for all value of coffee consumption per day if there any zeros prevent the log can get error and goes to infinity
+students.num$coffee_consumption_per_day <- students.num$coffee_consumption_per_day + 1
+students.num$coffee_consumption_per_day <- log(students.num$coffee_consumption_per_day)
+
+par(mfrow = c(1,2))
+hist(df$coffee_consumption_per_day, main = "Before", col = "red")
+hist(students.num$coffee_consumption_per_day, main = "After Log", col = "green")
+
+#-------------------------------------------Applying PCA-----------------------------------------------------
+
+students.num.sd <- scale(students.num)
+students.num.sd <- data.frame(students.num.sd)
+
+par(mfrow = c(1, 1))
+boxplot(students.num.sd, las = 2, col = 'gold', main = "Standardized Data")
+
+pc.students <- princomp(students.num.sd, scores = TRUE)
+summary(pc.students)
+
+#------------------------------------------visualization---------------------------------------------------
+
+graphics.off()
+
+# Visualization of variance
+layout(matrix(c(2, 3, 1, 3), 2, byrow = TRUE))
+
+# Variance explained by PCs
+p <- ncol(students.num.sd)
+plot(pc.students, las = 2, main = 'Principal Components', ylim = c(0, p))
+abline(h = 1, col = 'blue')
+
+# Variances of original standardized variables
+barplot(sapply(students.num.sd, sd)^2, las = 2, main = 'Original Variables', ylim = c(0, p),
+        ylab = 'Variances')
+
+# Cumulative variance
+plot(cumsum(pc.students$sdev^2) / sum(pc.students$sdev^2), type = 'b', axes = FALSE, 
+     xlab = 'Number of components', ylab = 'Contribution to the total variance', ylim = c(0, 1))
+abline(h = 1, col = 'blue')
+abline(h = 0.8, lty = 2, col = 'blue')
+box()
+axis(2, at = 0:10/10, labels = 0:10/10)
+axis(1, at = 1:ncol(students.num.sd),labels = 1:ncol(students.num.sd),las = 2)
+
+#Approximately 8 to 9 principal components are required to explain 80% of the total variance
+# If we wanted to perform dimensionality reduction, we could keep 9 PCs 
+
+#-------------------------------------------------------Loading-------------------------------------------------------
+
+# Loadings
+load.students <- pc.students$loadings
+load.students
+
+# Graphical representation
+par(mar = c(8,4,2,1), mfrow=c(3,1))
+for(i in 1:3)barplot(load.students[,i], ylim = c(-1, 1), main=paste('Loadings PC ',i,sep=''),las=2,cex.names = 0.6)
+
+#PC1 = Academic Performance vs Distraction
+#if PC1  is high: Hardworking student
+#if PC1 is low: Waste of his time
+
+#PC2 = Lifestyle / Well-being vs Digital Stress
+#if PC2  is high: balanced / healthy lifestyle
+#if PC2 is low: Stressed/unhealthy lifestyle
+
+#PC3 = Stress vs Activity / Lifestyle
+#if PC3  is high: A stressed person who isn't living their life
+#if PC3 is low: balanced person
+
+## ---------------------------------------------------Scores ----------------------------------------------------------
+scores.students <- pc.students$scores
+scores.students
+
+#scores plot
+par(mfrow = c(1,1))
+plot(scores.students[, 1:2], pch = 19, col = "darkblue", xlab = "PC1", ylab = "PC2", main = "Scores Plot: Students")
+abline(h = 0, v = 0, lty = 2, col = "grey")
+
+#Biplot
+par(mfrow = c(1,1))
+biplot(pc.students, cex = c(0.5, 0.8))
+
+#We color according to categorical variables
+students.label <- df[, !vapply(df, is.numeric, logical(1))]
+
+head(students.label)
+names(students.label)
+
+gender.label <- factor(df$gender)
+
+colors.gender <- c("red", "blue", "darkgreen", "purple")
+col.gender <- colors.gender[as.numeric(gender.label)]
+
+plot(scores.students[, 1:2], col = col.gender, pch = 19, xlab = "PC1", ylab = "PC2", main = "Scores Plot Colored by Gender")
+abline(h = 0, v = 0, lty = 2, col = "grey")
+
+legend("topright", legend = levels(gender.label),fill = colors.gender[1:length(levels(gender.label))],
+       bty = "n")
