@@ -587,10 +587,18 @@ centroids_pc12 <- aggregate(
   FUN = mean
 )
 
+cloud_colors <- c(
+  "Low" = "red",
+  "Medium" = "orange",
+  "High" = "blue"
+)
+
+centroid_color <- "black"
+
 plot(
   pca_plot_data$PC1,
   pca_plot_data$PC2,
-  col = adjustcolor(category_colors[pca_plot_data$performance_category], alpha.f = 0.55),
+  col = adjustcolor(cloud_colors[pca_plot_data$performance_category], alpha.f = 0.45),
   pch = 16,
   xlab = "PC1",
   ylab = "PC2",
@@ -602,26 +610,28 @@ points(
   centroids_pc12$PC1,
   centroids_pc12$PC2,
   pch = 8,
-  col = "red",
-  cex = 2.5,
+  col = centroid_color,
+  cex = 2.8,
   lwd = 3
 )
 
 legend(
   "topright",
   legend = levels(pca_plot_data$performance_category),
-  col = category_colors[levels(pca_plot_data$performance_category)],
+  col = cloud_colors[levels(pca_plot_data$performance_category)],
   pch = 16,
-  title = "Performance Category"
+  title = "Performance Category",
+  bty = "n"
 )
 
 legend(
   "bottomright",
   legend = "Centroids",
-  col = "red",
+  col = centroid_color,
   pch = 8,
   pt.cex = 2,
-  lwd = 3
+  lwd = 3,
+  bty = "n"
 )
 ```
 
@@ -1611,6 +1621,76 @@ par(old_par)
 
 The PCA-based Bayesian classifier shows whether dimensionality reduction can preserve classification accuracy for a probability-based model.  
 If the PCA-based version performs similarly to the original-variable Naive Bayes classifier while using fewer dimensions, then PCA provides a simpler Bayesian classification model.
+
+
+## PCA Accuracy by Number of Principal Components
+
+This plot compares the PCA-based classifiers directly. For kNN, the line uses the best test accuracy across the tested neighbor values for each number of principal components, so there is only one kNN line.
+
+```{r pca-accuracy-by-pcs-combined-plot}
+combined_pc_accuracy <- data.frame(
+  Number_of_PCs = accuracy_results$Number_of_PCs,
+  Centroid = accuracy_results$Accuracy,
+  kNN = pca_knn_pc_summary$Best_Accuracy[
+    match(accuracy_results$Number_of_PCs, pca_knn_pc_summary$Number_of_PCs)
+  ],
+  Naive_Bayes = pca_bayes_tuning_results$Accuracy[
+    match(accuracy_results$Number_of_PCs, pca_bayes_tuning_results$Number_of_PCs)
+  ]
+)
+
+plot(
+  combined_pc_accuracy$Number_of_PCs,
+  combined_pc_accuracy$Centroid,
+  type = "b",
+  pch = 19,
+  lty = 1,
+  col = plot_colors[1],
+  bg = plot_colors[1],
+  lwd = 2,
+  xlab = "Number of Principal Components",
+  ylab = "Test Accuracy",
+  main = "PCA-Based Classifier Accuracy by Number of PCs",
+  ylim = c(0, 1)
+)
+grid(col = grid_color)
+
+lines(
+  combined_pc_accuracy$Number_of_PCs,
+  combined_pc_accuracy$kNN,
+  type = "b",
+  pch = 17,
+  lty = 2,
+  col = plot_colors[4],
+  bg = plot_colors[4],
+  lwd = 2
+)
+
+lines(
+  combined_pc_accuracy$Number_of_PCs,
+  combined_pc_accuracy$Naive_Bayes,
+  type = "b",
+  pch = 15,
+  lty = 3,
+  col = plot_colors[5],
+  bg = plot_colors[5],
+  lwd = 2
+)
+
+legend(
+  "bottomright",
+  legend = c(
+    "Nearest centroid",
+    "kNN, best k for each PC count",
+    "Naive Bayes"
+  ),
+  col = c(plot_colors[1], plot_colors[4], plot_colors[5]),
+  pch = c(19, 17, 15),
+  lty = c(1, 2, 3),
+  lwd = 2,
+  bty = "n"
+)
+```
 
 ## Final Classifier Comparison
 
